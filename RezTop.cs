@@ -55,7 +55,7 @@ public sealed class RezTopPlugin : BasePlugin
             if (File.Exists(mapPath))
                 _maps.AddRange(File.ReadAllLines(mapPath).Select(x => x.Trim())
                     .Where(x => x.Length > 0 && !x.StartsWith("#"))
-                    .Where(x => Regex.IsMatch(x, @"^[a-zA-Z0-9_]+$"))
+                    .Where(x => Regex.IsMatch(x, @"^(workshop:)?[a-zA-Z0-9_]+$", RegexOptions.IgnoreCase))
                     .Distinct(StringComparer.OrdinalIgnoreCase));
         }
         catch (Exception ex) { Logger.LogError(ex, "Failed to load RezTop configuration"); }
@@ -157,7 +157,7 @@ public sealed class RezTopPlugin : BasePlugin
             var next = GetNextMap();
             if (next == null) { Broadcast("MapList_Empty"); Logger.LogWarning("maplist.txt is empty or missing"); return; }
             Broadcast("Map_Change", ("MAP", next));
-            AddTimer(3.0f, () => Server.ExecuteCommand($"changelevel {next}"));
+            AddTimer(3.0f, () =>\n            {\n                if (next.StartsWith("workshop:", StringComparison.OrdinalIgnoreCase))\n                    Server.ExecuteCommand($"ds_workshop_changelevel {next[9..]}");\n                else\n                    Server.ExecuteCommand($"changelevel {next}");\n            });
             return;
         }
         var reason = winner == CsTeam.CounterTerrorist ? RoundEndReason.CTsWin : RoundEndReason.TerroristsWin;
