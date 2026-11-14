@@ -1,6 +1,3 @@
-# Обычные карты: указывай имя карты
-de_mirage
-
-# Workshop: указывай точное имя карты из ds_workshop_listmaps
-workshop:aim_map
-workshop:surf_beginner
+# Workshop-карты из коллекции (имена получены через ds_workshop_listmaps)
+workshop:dm_nixware_mirage_d
+workshop:dm_nixware_fyanow_d
