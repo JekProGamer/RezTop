@@ -1,3 +1,0 @@
-# Укажи ровно две Workshop-карты (имена, не ID коллекции).
-dm_nixware_mirage_d
-dm_nixware_fysnow_d
