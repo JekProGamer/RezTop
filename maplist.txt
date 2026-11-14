@@ -1,8 +1,6 @@
-# Указывай карты по одной в строке.
-# После последней карты список начнётся заново.
+# Обычные карты: указывай имя карты
 de_mirage
-de_dust2
-de_inferno
-de_nuke
-de_ancient
-de_anubis
+
+# Workshop: указывай точное имя карты из ds_workshop_listmaps
+workshop:aim_map
+workshop:surf_beginner
