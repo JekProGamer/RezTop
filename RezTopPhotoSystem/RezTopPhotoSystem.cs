@@ -85,6 +85,7 @@ public sealed class PhotoSystemPlugin : BasePlugin
             return HookResult.Continue;
 
         _loadedMap = map;
+        _spawned.Clear();
         _ = LoadMapPhotosAsync(map);
         return HookResult.Continue;
     }
@@ -166,6 +167,15 @@ public sealed class PhotoSystemPlugin : BasePlugin
         }
 
         var hit = trace.HitPoint;
+        var dx = hit.X - eye.X;
+        var dy = hit.Y - eye.Y;
+        var dz = hit.Z - eye.Z;
+        var distance = MathF.Sqrt(dx * dx + dy * dy + dz * dz);
+        if (distance > _config.MaxTraceDistance)
+        {
+            Reply(player, $"Поверхность слишком далеко (максимум {_config.MaxTraceDistance:0} units).");
+            return;
+        }
         var normal = trace.Normal;
         var yaw = MathF.Atan2(normal.Y, normal.X) * (180.0f / MathF.PI);
         var row = new PhotoRow(0, name, hit.X + normal.X * 2.0f, hit.Y + normal.Y * 2.0f,
