@@ -1,10 +1,14 @@
 {
+  "AdminPermission": "@css/generic",
   "MySql": {
     "ConnectionString": "Server=127.0.0.1;Port=3306;Database=reztop;User ID=USERNAME;Password=PASSWORD;SslMode=Preferred;"
   },
-  "Permission": "@css/generic",
-  "PhotoModelDirectory": "models/reztop/photos",
-  "ImageDirectory": "images",
-  "MaxTraceDistance": 250.0,
-  "DefaultScale": 1.0
+  "Photos": [
+    {
+      "Id": "reztop_poster",
+      "DisplayName": "RezTop — большой постер",
+      "ModelPath": "models/reztop/photos/reztop_poster.vmdl",
+      "Scale": 1.0
+    }
+  ]
 }
