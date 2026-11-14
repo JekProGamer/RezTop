@@ -1,0 +1,14 @@
+{
+  "Prefix": "{WHITE}[{ORANGE}Rez{RED}Top{WHITE}. cc]",
+  "Messages": {
+    "CT_Winner": "{GREEN}CT WINNER! {WHITE}Счёт: {GREEN}{CT_SCORE}{WHITE}:{RED}{T_SCORE}",
+    "T_Winner": "{RED}T WINNER! {WHITE}Счёт: {GREEN}{CT_SCORE}{WHITE}:{RED}{T_SCORE}",
+    "CT_Loser": "{RED}CT LOSER!",
+    "T_Loser": "{RED}T LOSER!",
+    "Life_Lost": "{ORANGE}Ты потерял жизнь! Осталось: {WHITE}{LIVES}",
+    "No_Lives": "{RED}У тебя закончились жизни! Ты ждёшь следующий раунд.",
+    "Lives_Reset": "{GREEN}Новый раунд! Твои жизни восстановлены: {WHITE}{LIVES}",
+    "Map_Change": "{ORANGE}Матч завершён! Загружается следующая карта: {GREEN}{MAP}",
+    "MapList_Empty": "{RED}Список карт пуст! Проверь maplist.txt."
+  }
+}
