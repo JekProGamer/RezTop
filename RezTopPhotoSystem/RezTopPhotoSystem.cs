@@ -172,8 +172,11 @@ public sealed class RezTopPhotoSystem : BasePlugin
             cmd.Parameters.AddWithValue("@pitch", ang.X); cmd.Parameters.AddWithValue("@yaw", ang.Y); cmd.Parameters.AddWithValue("@roll", ang.Z);
             cmd.Parameters.AddWithValue("@admin", steamId);
             var id = Convert.ToInt64(await cmd.ExecuteScalarAsync());
-            _worldTextIds[id] = apiId;
-            Server.NextFrame(() => { if (player.IsValid) player.PrintToChat($"[RezTop] Фото размещено. ID: {id}"); });
+            Server.NextFrame(() =>
+            {
+                _worldTextIds[id] = apiId;
+                if (player.IsValid) player.PrintToChat($"[RezTop] Фото размещено. ID: {id}");
+            });
         }
         catch (Exception ex)
         {
@@ -232,9 +235,12 @@ public sealed class RezTopPhotoSystem : BasePlugin
                     ModelBackgroundEnabled = true, ModelBackgroundPath = photo.ModelPath,
                     ModelBackgroundSurfaceScale = photo.Scale, ModelBackgroundDepth = 2
                 };
-                var id = _worldText.AddWorldText(TextPlacement.Wall, line,
-                    new Vector(row.X, row.Y, row.Z), new QAngle(row.Pitch, row.Yaw, row.Roll));
-                _worldTextIds[row.Id] = id;
+                Server.NextFrame(() =>
+                {
+                    var id = _worldText!.AddWorldText(TextPlacement.Wall, line,
+                        new Vector(row.X, row.Y, row.Z), new QAngle(row.Pitch, row.Yaw, row.Roll));
+                    _worldTextIds[row.Id] = id;
+                });
             }
             Logger.LogInformation("RezTop PhotoSystem: loaded {Count} panels for map {Map}", rows.Count, map);
         }
