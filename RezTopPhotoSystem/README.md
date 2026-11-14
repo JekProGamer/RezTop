@@ -1,39 +1,50 @@
-# RezTop PhotoSystem
+# RezTop PhotoSystem 1.0
 
-Отдельный плагин CounterStrikeSharp (.NET 8) для больших настенных изображений, сохранённых отдельно для каждой карты в MySQL.
+CS2 / CounterStrikeSharp plugin. Uses the real K4-WorldText-API v2 shared interface and WASDMenuAPI.
 
-## Важное ограничение Source 2
+## What it does
+- Admin-only `!photo`, `!photo_add`, `!photo_list`, `!photo_remove`.
+- WASDMenuAPI menu.
+- Places a large wall panel at the surface the admin is aiming at.
+- Uses K4-WorldText-API's `TextLine.ModelBackground*` feature to render a textured Source 2 model behind an invisible text line.
+- Saves placements by map in MySQL and restores them when that map starts.
+- Per-plugin K4 scope; unload removes this plugin's active world texts.
 
-Сервер CS2 не умеет превратить произвольный JPG/PNG из FTP в видимую всем игрокам текстуру стены только силами CounterStrikeSharp. Для отображения нужны скомпилированные Source 2 ресурсы (модель .vmdl + материал/текстура .vmat/.vtex), которые также должны быть доступны клиентам через FastDL/Workshop/resource-пакет.
+## Important: images must be compiled Source 2 assets
+A raw JPG/PNG uploaded by FTP cannot be displayed as a world texture by CounterStrikeSharp or K4-WorldText-API. The K4 API displays a `.vmdl` model as the panel background. Each photo therefore needs a compiled flat-panel model and its compiled material/texture resources. Upload the model and all dependent resources to the server's game content and make them available to clients (Workshop/FastDL/server resource distribution as appropriate).
 
-Поэтому этот плагин ожидает, что для каждого изображения подготовлена панель-модель:
-- FTP: `images/<name>.jpg` — исходник/превью для администратора.
-- Игровой ресурс: `models/reztop/photos/<name>.vmdl` — скомпилированная плоская панель с соответствующей текстурой.
+Example model path in config: `models/reztop/photos/reztop_poster.vmdl`.
+The model should be a flat rectangular quad, with its front face oriented along the model's expected forward axis, UV-mapped to the photo texture, and centered at its origin. The plugin precaches configured model paths via `OnServerPrecacheResources`.
 
-Имя `<name>` используется в команде и в имени модели. Само копирование JPG в папку не компилирует материал.
+## Build
+Requirements: .NET 10 SDK, CounterStrikeSharp API 1.0.369+, MySqlConnector, K4 WorldText API v2, WASDMenuAPI.
 
-## Команды (только админы)
+1. Create `lib/` beside the csproj.
+2. Copy the exact shared assemblies from the server/builds:
+   - `K4-WorldText-SharedAPI.dll` from K4-WorldText-API v2
+   - `WASDSharedAPI.dll` from WASDMenuAPI
+3. `dotnet restore`
+4. `dotnet build -c Release`
+5. Copy `bin/Release/net10.0/RezTopPhotoSystem.dll` and `config.json` into `game/csgo/addons/counterstrikesharp/plugins/RezTopPhotoSystem/`.
 
-Все команды проверяют CounterStrikeSharp permission из config (по умолчанию `@css/generic`):
-- `!photo_add <name>` — поставить большую панель туда, куда смотрит администратор.
-- `!photo_list` — список изображений на текущей карте.
-- `!photo_remove <id>` — удалить панель по ID с текущей карты.
+Do not copy the two shared API DLLs into the plugin folder: install their own plugins/shared assemblies as their projects specify.
 
-Команды доступны также как `css_photo_add`, `css_photo_list`, `css_photo_remove` в консоли.
+## Config
+Set MySQL connection string and add each compiled photo model to `Photos`. Every model path must be precached and downloadable by clients. `Scale` is uniform model scale; use a large panel model authored at the desired aspect ratio.
 
-## Установка
+## Permissions
+Default permission: `@css/generic`. Grant it to admins in CounterStrikeSharp's admins configuration. Change `AdminPermission` to a custom permission if desired.
 
-1. Собрать: `dotnet restore && dotnet build -c Release`.
-2. Создать `game/csgo/addons/counterstrikesharp/plugins/RezTopPhotoSystem/`.
-3. Скопировать DLL и `config.json`; создать там папку `images/`.
-4. Загрузить исходные JPG/PNG по FTP в `images/`.
-5. Подготовить и установить соответствующие скомпилированные модели и материалы в серверный game content и обеспечить их загрузку клиентами.
-6. Заполнить MySQL-строку в config.json. Таблица создаётся автоматически при запуске.
+## Database
+The plugin creates `reztop_photo_placements` automatically. Each row stores map, photo ID, transform, admin SteamID, and creation time.
 
-## Права
+## Commands
+- `!photo` — open admin menu
+- `!photo_add` — open photo picker
+- `!photo_list` / `!photo_remove` — open placement list; select an entry to remove it
 
-В `game/csgo/addons/counterstrikesharp/configs/admins.json` у администратора должна быть permission `@css/generic` (или изменить Permission в config плагина на отдельный флаг, например `@reztop/photos`).
-
-## Проверка
-
-Исходник использует CounterStrikeSharp.API 1.0.380 и MySqlConnector. Сборка и поведение с конкретным серверным билдом CS2 должны быть проверены на тестовом сервере; DLL в репозитории не приложена.
+## Notes
+- This source targets K4 WorldText API v2 (capability `k4-worldtext:sharedapi`, provider then `ForPlugin(this)`) and WASD capability `wasdmenu:manager`.
+- K4 world text IDs are runtime-only; MySQL stores placement data and the plugin recreates panels after map changes.
+- Test the panel orientation and offset on your map. The model's authored forward axis affects how it faces the wall.
+- This source has not been built against your exact server binaries yet. Match the shared API DLL versions to the installed plugins before deployment.
